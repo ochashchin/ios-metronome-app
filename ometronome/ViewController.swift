@@ -9,9 +9,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var customLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var customRightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var customTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var customBottomConstraint: NSLayoutConstraint!
-    
+   
     var switchTap: Bool = false
     
     override func viewDidLoad() {
@@ -20,8 +18,9 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        
         on_off = R.findViewById(controller: self, id: R.on_off)
-        on_off.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onOffTap(sender:))))
+        on_off.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(powerTap(sender:))))
         
         power_on = R.findViewById(controller: self, id: R.power_on)
         
@@ -30,16 +29,10 @@ class ViewController: UIViewController {
         
         switch_slider = R.findViewById(controller: self, id: R.switch_slider)
         
-        self.customTopConstraint = self.switch_slider.topAnchor.constraint(equalTo: self.switch_press.topAnchor)
         
-        self.customBottomConstraint = self.switch_slider.bottomAnchor.constraint(equalTo: self.switch_press.bottomAnchor)
-        
-        self.customLeftConstraint = self.switch_slider.leftAnchor.constraint(equalTo: self.switch_press.leftAnchor)
-        
-        self.customRightConstraint = self.switch_slider.rightAnchor.constraint(equalTo: self.switch_press.rightAnchor)
     }
     
-    @objc func onOffTap(sender: UITapGestureRecognizer) {
+    @objc func powerTap(sender: UITapGestureRecognizer) {
         print("tap")
         
         UIView.animate(withDuration: 0.2, delay: 0, options: UIView.AnimationOptions.transitionCrossDissolve, animations: {
@@ -54,21 +47,24 @@ class ViewController: UIViewController {
     @objc func switchTap(sender: UITapGestureRecognizer) {
         print("switchTap")
         
-        self.switchTap != self.switchTap
+        switchTap = !switchTap
+                
+        if(self.customLeftConstraint == nil){
+            self.customLeftConstraint = self.switch_slider.leftAnchor.constraint(equalTo: self.switch_press.leftAnchor)
+        }
         
-        var customConstraint: [NSLayoutConstraint] = self.switch_slider.constraints
-
-        UIView.animate(withDuration: 3.0, delay: 0.0, options: [], animations: {
+        if(self.customRightConstraint == nil){
+            self.customRightConstraint = self.switch_slider.rightAnchor.constraint(equalTo: self.switch_press.rightAnchor)
+        }
         
-            self.switch_slider.removeConstraints(self.switch_slider.constraints)
-
-            self.customTopConstraint.isActive = true
-            self.customBottomConstraint.isActive = true
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: [], animations: {
             
             if(self.switchTap){
+                self.customLeftConstraint.isActive = false
                 self.customRightConstraint.isActive = true
             } else {
                 self.customLeftConstraint.isActive = true
+                self.customRightConstraint.isActive = false
             }
             
             self.view.layoutIfNeeded()
