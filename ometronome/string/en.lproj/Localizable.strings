@@ -1,0 +1,11 @@
+"app_name" = "Metronome";
+"status" = "tap to resume";
+"no_flash" = "feature not supported";
+"dialog_body" = "Your feedback means a lot to us! Please drop a comment on the store page.";
+"dialog_head" = "Please rate us!";
+"dialog_cancel" = "Later";
+"dialog_ok" = "Rate Now";
+"banner_ad_unit_prod_id" = "ca-app-pub-2874567203173670/1118749785";
+"banner_ad_unit_test_id" = "ca-app-pub-3940256099942544/6300978111";
+"play_metronome" = "Play metronome";
+"press_to_start" = "Press to Start";

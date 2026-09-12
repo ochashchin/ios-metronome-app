@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="rubik_regular.ttf">
+            <string>Rubik-Regular</string>
+        </array>
+        <array key="rubik_bold.ttf">
+            <string>Rubik-Bold</string>
+        </array>
+    </customFonts>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Metronome" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="2tT-mT-rR5" userLabel="main">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="vignette" translatesAutoresizingMaskIntoConstraints="NO" id="Ezu-uN-sdm" userLabel="vignette">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5tU-24-aB6" userLabel="controls">
+                                <rect key="frame" x="184" y="243" width="400" height="560"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="top-slider-id" userLabel="topSliderBar" customClass="TopSliderBar" customModule="Metronome" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="top_slider_progress_empty" translatesAutoresizingMaskIntoConstraints="NO" id="ts-track-iv">
+                                                <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="top_slider_surface" translatesAutoresizingMaskIntoConstraints="NO" id="ts-surf-iv">
+                                                <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="top_slider_ao" translatesAutoresizingMaskIntoConstraints="NO" id="ts-ao-iv">
+                                                <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="center_button_off" translatesAutoresizingMaskIntoConstraints="NO" id="ts-cbtn-iv">
+                                                <rect key="frame" x="128.66666666666666" y="128.66666666666666" width="142.66666666666669" height="142.66666666666669"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="ts-cbtn-iv" secondAttribute="height" multiplier="1:1" id="cbtn-ratio"/>
+                                                </constraints>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="slider_button_off" translatesAutoresizingMaskIntoConstraints="NO" id="ts-knob-iv">
+                                                <rect key="frame" x="2" y="161" width="94" height="94"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="ts-knob-iv" secondAttribute="height" multiplier="1:1" id="tknob-ratio"/>
+                                                </constraints>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="top-slider-id" secondAttribute="height" multiplier="1:1" id="top-slider-ratio"/>
+                                            <constraint firstItem="ts-track-iv" firstAttribute="top" secondItem="top-slider-id" secondAttribute="top" id="ts-c1"/>
+                                            <constraint firstItem="ts-track-iv" firstAttribute="leading" secondItem="top-slider-id" secondAttribute="leading" id="ts-c2"/>
+                                            <constraint firstAttribute="trailing" secondItem="ts-track-iv" secondAttribute="trailing" id="ts-c3"/>
+                                            <constraint firstAttribute="bottom" secondItem="ts-track-iv" secondAttribute="bottom" id="ts-c4"/>
+                                            <constraint firstItem="ts-surf-iv" firstAttribute="top" secondItem="top-slider-id" secondAttribute="top" id="ts-c5"/>
+                                            <constraint firstItem="ts-surf-iv" firstAttribute="leading" secondItem="top-slider-id" secondAttribute="leading" id="ts-c6"/>
+                                            <constraint firstAttribute="trailing" secondItem="ts-surf-iv" secondAttribute="trailing" id="ts-c7"/>
+                                            <constraint firstAttribute="bottom" secondItem="ts-surf-iv" secondAttribute="bottom" id="ts-c8"/>
+                                            <constraint firstItem="ts-ao-iv" firstAttribute="top" secondItem="top-slider-id" secondAttribute="top" id="ts-c9"/>
+                                            <constraint firstItem="ts-ao-iv" firstAttribute="leading" secondItem="top-slider-id" secondAttribute="leading" id="ts-c10"/>
+                                            <constraint firstAttribute="trailing" secondItem="ts-ao-iv" secondAttribute="trailing" id="ts-c11"/>
+                                            <constraint firstAttribute="bottom" secondItem="ts-ao-iv" secondAttribute="bottom" id="ts-c12"/>
+                                            <constraint firstItem="ts-cbtn-iv" firstAttribute="centerX" secondItem="top-slider-id" secondAttribute="centerX" id="ts-c13"/>
+                                            <constraint firstItem="ts-cbtn-iv" firstAttribute="centerY" secondItem="top-slider-id" secondAttribute="centerY" id="ts-c14"/>
+                                            <constraint firstItem="ts-cbtn-iv" firstAttribute="width" secondItem="top-slider-id" secondAttribute="width" multiplier="241:675" id="ts-c15"/>
+                                            <constraint firstItem="ts-knob-iv" firstAttribute="width" secondItem="top-slider-id" secondAttribute="width" multiplier="0.235" id="ts-c16"/>
+                                            <constraint firstItem="ts-knob-iv" firstAttribute="leading" secondItem="top-slider-id" secondAttribute="leading" constant="2" id="ts-c17"/>
+                                            <constraint firstItem="ts-knob-iv" firstAttribute="centerY" secondItem="top-slider-id" secondAttribute="centerY" constant="8" id="ts-c18"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bottom-slider-id" userLabel="bottomSliderBar" customClass="BottomSliderBar" customModule="Metronome" customModuleProvider="target">
+                                        <rect key="frame" x="68" y="392" width="264" height="100.33333333333337"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bottom_slider" translatesAutoresizingMaskIntoConstraints="NO" id="bs-track-iv">
+                                                <rect key="frame" x="0.0" y="0.0" width="264" height="100.33333333333337"/>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bottom_slider_icons" translatesAutoresizingMaskIntoConstraints="NO" id="bs-icons-iv">
+                                                <rect key="frame" x="9.5" y="0.0" width="245" height="100.33333333333337"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="bs-icons-iv" secondAttribute="height" multiplier="387:158" id="bs-icons-ratio"/>
+                                                </constraints>
+                                            </imageView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bs-knob-container">
+                                                <rect key="frame" x="5" y="-3" width="106" height="106"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="slider_button_off" translatesAutoresizingMaskIntoConstraints="NO" id="bs-knob-iv">
+                                                        <rect key="frame" x="0.0" y="0.0" width="106" height="106"/>
+                                                    </imageView>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sound_off" translatesAutoresizingMaskIntoConstraints="NO" id="bs-sound-iv">
+                                                        <rect key="frame" x="0.0" y="0.0" width="106" height="106"/>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="bs-knob-container" secondAttribute="height" multiplier="1:1" id="bs-kc-ratio"/>
+                                                    <constraint firstItem="bs-knob-iv" firstAttribute="top" secondItem="bs-knob-container" secondAttribute="top" id="bs-kc-1"/>
+                                                    <constraint firstItem="bs-knob-iv" firstAttribute="leading" secondItem="bs-knob-container" secondAttribute="leading" id="bs-kc-2"/>
+                                                    <constraint firstAttribute="trailing" secondItem="bs-knob-iv" secondAttribute="trailing" id="bs-kc-3"/>
+                                                    <constraint firstAttribute="bottom" secondItem="bs-knob-iv" secondAttribute="bottom" id="bs-kc-4"/>
+                                                    <constraint firstItem="bs-sound-iv" firstAttribute="top" secondItem="bs-knob-container" secondAttribute="top" id="bs-kc-5"/>
+                                                    <constraint firstItem="bs-sound-iv" firstAttribute="leading" secondItem="bs-knob-container" secondAttribute="leading" id="bs-kc-6"/>
+                                                    <constraint firstAttribute="trailing" secondItem="bs-sound-iv" secondAttribute="trailing" id="bs-kc-7"/>
+                                                    <constraint firstAttribute="bottom" secondItem="bs-sound-iv" secondAttribute="bottom" id="bs-kc-8"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="bottom-slider-id" secondAttribute="height" multiplier="416:158" id="bs-ratio"/>
+                                            <constraint firstItem="bs-track-iv" firstAttribute="top" secondItem="bottom-slider-id" secondAttribute="top" id="bs-c1"/>
+                                            <constraint firstItem="bs-track-iv" firstAttribute="leading" secondItem="bottom-slider-id" secondAttribute="leading" id="bs-c2"/>
+                                            <constraint firstAttribute="trailing" secondItem="bs-track-iv" secondAttribute="trailing" id="bs-c3"/>
+                                            <constraint firstAttribute="bottom" secondItem="bs-track-iv" secondAttribute="bottom" id="bs-c4"/>
+                                            <constraint firstItem="bs-icons-iv" firstAttribute="top" secondItem="bottom-slider-id" secondAttribute="top" id="bs-c5"/>
+                                            <constraint firstItem="bs-icons-iv" firstAttribute="bottom" secondItem="bottom-slider-id" secondAttribute="bottom" id="bs-c6"/>
+                                            <constraint firstItem="bs-icons-iv" firstAttribute="centerX" secondItem="bottom-slider-id" secondAttribute="centerX" id="bs-c7"/>
+                                            <constraint firstItem="bs-knob-container" firstAttribute="centerY" secondItem="bottom-slider-id" secondAttribute="centerY" id="bs-c8"/>
+                                            <constraint firstItem="bs-knob-container" firstAttribute="height" secondItem="bottom-slider-id" secondAttribute="height" id="bs-c9"/>
+                                            <constraint firstItem="bs-knob-container" firstAttribute="leading" secondItem="bs-icons-iv" secondAttribute="leading" constant="-4" id="bs-c10"/>
+                                        </constraints>
+                                    </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="68" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="24" translatesAutoresizingMaskIntoConstraints="NO" id="bpm-label-id" userLabel="bpmLabel">
+                                        <rect key="frame" x="0.0" y="312" width="400" height="78"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="78" id="bpm-height"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Rubik-Regular" family="Rubik" pointSize="78"/>
+                                        <color key="textColor" name="TextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="882" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ms-label-id" userLabel="msLabel">
+                                        <rect key="frame" x="0.0" y="476.33333333333337" width="400" height="26"/>
+                                        <fontDescription key="fontDescription" name="Rubik-Bold" family="Rubik" pointSize="22"/>
+                                        <color key="textColor" name="TextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="top-slider-id" firstAttribute="top" secondItem="5tU-24-aB6" secondAttribute="top" id="c-top-1"/>
+                                    <constraint firstItem="top-slider-id" firstAttribute="leading" secondItem="5tU-24-aB6" secondAttribute="leading" id="c-top-2"/>
+                                    <constraint firstAttribute="trailing" secondItem="top-slider-id" secondAttribute="trailing" id="c-top-3"/>
+                                    <constraint firstItem="bpm-label-id" firstAttribute="leading" secondItem="5tU-24-aB6" secondAttribute="leading" id="c-bpm-1"/>
+                                    <constraint firstAttribute="trailing" secondItem="bpm-label-id" secondAttribute="trailing" id="c-bpm-2"/>
+                                    <constraint firstItem="bpm-label-id" firstAttribute="top" secondItem="top-slider-id" secondAttribute="bottom" constant="-90" id="c-bpm-3"/>
+                                    <constraint firstItem="bottom-slider-id" firstAttribute="centerX" secondItem="5tU-24-aB6" secondAttribute="centerX" id="c-bs-1"/>
+                                    <constraint firstItem="bottom-slider-id" firstAttribute="width" secondItem="5tU-24-aB6" secondAttribute="width" multiplier="445:675" id="c-bs-2"/>
+                                    <constraint firstItem="bottom-slider-id" firstAttribute="top" secondItem="top-slider-id" secondAttribute="bottom" constant="-16" id="c-bs-3"/>
+                                    <constraint firstItem="ms-label-id" firstAttribute="leading" secondItem="5tU-24-aB6" secondAttribute="leading" id="c-ms-1"/>
+                                    <constraint firstAttribute="trailing" secondItem="ms-label-id" secondAttribute="trailing" id="c-ms-2"/>
+                                    <constraint firstItem="ms-label-id" firstAttribute="top" secondItem="bottom-slider-id" secondAttribute="bottom" constant="6" id="c-ms-3"/>
+                                    <constraint firstAttribute="width" secondItem="5tU-24-aB6" secondAttribute="height" multiplier="675:900" id="c-main-ratio"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="420" id="c-max-w"/>
+                                    <constraint firstAttribute="width" priority="750" constant="400" id="c-pref-w"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Gwu-A5-9XC"/>
+                        <color key="backgroundColor" name="BackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Ezu-uN-sdm" firstAttribute="leading" secondItem="2tT-mT-rR5" secondAttribute="leading" id="v-1"/>
+                            <constraint firstAttribute="trailing" secondItem="Ezu-uN-sdm" secondAttribute="trailing" id="v-2"/>
+                            <constraint firstItem="Ezu-uN-sdm" firstAttribute="top" secondItem="2tT-mT-rR5" secondAttribute="top" id="v-3"/>
+                            <constraint firstAttribute="bottom" secondItem="Ezu-uN-sdm" secondAttribute="bottom" id="v-4"/>
+                            <constraint firstItem="5tU-24-aB6" firstAttribute="centerY" secondItem="2tT-mT-rR5" secondAttribute="centerY" id="ctr-1"/>
+                            <constraint firstItem="5tU-24-aB6" firstAttribute="centerX" secondItem="2tT-mT-rR5" secondAttribute="centerX" id="ctr-2"/>
+                            <constraint firstItem="5tU-24-aB6" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Gwu-A5-9XC" secondAttribute="leading" constant="40" id="ctr-3"/>
+                            <constraint firstItem="Gwu-A5-9XC" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5tU-24-aB6" secondAttribute="trailing" constant="40" id="ctr-4"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="bottomSliderBar" destination="bottom-slider-id" id="conn-bs"/>
+                        <outlet property="bpmLabel" destination="bpm-label-id" id="conn-bpm"/>
+                        <outlet property="controlsContainer" destination="5tU-24-aB6" id="conn-ctrl"/>
+                        <outlet property="msLabel" destination="ms-label-id" id="conn-ms"/>
+                        <outlet property="topSliderBar" destination="top-slider-id" id="conn-top"/>
+                        <outlet property="vignetteImageView" destination="Ezu-uN-sdm" id="conn-vig"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="120" y="-28"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="bottom_slider" width="1934" height="737"/>
+        <image name="bottom_slider_icons" width="1572" height="632"/>
+        <image name="center_button_off" width="964" height="964"/>
+        <image name="slider_button_off" width="632" height="632"/>
+        <image name="sound_off" width="632" height="632"/>
+        <image name="top_slider_ao" width="2700" height="2700"/>
+        <image name="top_slider_progress_empty" width="2700" height="2700"/>
+        <image name="top_slider_surface" width="2700" height="2700"/>
+        <image name="vignette" width="1080" height="1920"/>
+        <namedColor name="BackgroundColor">
+            <color red="0.83529411764705885" green="0.84705882352941175" blue="0.8666666666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="TextColor">
+            <color red="0.43137254901960786" green="0.43137254901960786" blue="0.43137254901960786" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

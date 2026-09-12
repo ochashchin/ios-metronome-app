@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Yit-Os-lRD">
-    <device id="retina5_9" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Yit-Os-lRD">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,54 +14,69 @@
             <objects>
                 <viewController id="Yit-Os-lRD" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="V77-0K-Fof">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="metro_" translatesAutoresizingMaskIntoConstraints="NO" id="KJA-G4-X1A" userLabel="metro">
-                                <rect key="frame" x="16" y="288.66666666666669" width="343" height="161.33333333333331"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="col-view-id" userLabel="col">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="metro_" translatesAutoresizingMaskIntoConstraints="NO" id="KJA-G4-X1A" userLabel="metro">
+                                        <rect key="frame" x="20" y="301.33333333333331" width="353" height="166.33333333333331"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="KJA-G4-X1A" secondAttribute="height" multiplier="1586:746" id="Kk1-8p-9UP"/>
+                                        </constraints>
+                                    </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nome_" translatesAutoresizingMaskIntoConstraints="NO" id="9UG-EX-Q5A" userLabel="nome">
+                                        <rect key="frame" x="20" y="384.33333333333331" width="353" height="166.33333333333331"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="9UG-EX-Q5A" secondAttribute="height" multiplier="1586:746" id="btX-a8-gxN"/>
+                                        </constraints>
+                                    </imageView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9er-zt-vGC" userLabel="centre">
+                                        <rect key="frame" x="20" y="384.33333333333331" width="353" height="83.333333333333314"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="9er-zt-vGC" secondAttribute="height" multiplier="1586:373" id="YNp-Yz-D1k"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="KJA-G4-X1A" secondAttribute="height" multiplier="1586:746" id="Kk1-8p-9UP"/>
-                                </constraints>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nome_" translatesAutoresizingMaskIntoConstraints="NO" id="9UG-EX-Q5A" userLabel="nome">
-                                <rect key="frame" x="16" y="362" width="343" height="161.33333333333337"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="9UG-EX-Q5A" secondAttribute="height" multiplier="1586:746" id="btX-a8-gxN"/>
-                                </constraints>
-                            </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9er-zt-vGC" userLabel="centre">
-                                <rect key="frame" x="0.0" y="362" width="375" height="88"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="9er-zt-vGC" secondAttribute="height" multiplier="1586:373" id="YNp-Yz-D1k"/>
+                                    <constraint firstItem="9er-zt-vGC" firstAttribute="bottom" secondItem="KJA-G4-X1A" secondAttribute="bottom" id="centre-bottom-metro"/>
+                                    <constraint firstItem="9er-zt-vGC" firstAttribute="centerY" secondItem="col-view-id" secondAttribute="centerY" id="centre-centerY"/>
+                                    <constraint firstItem="9er-zt-vGC" firstAttribute="leading" secondItem="KJA-G4-X1A" secondAttribute="leading" id="centre-lead"/>
+                                    <constraint firstItem="9er-zt-vGC" firstAttribute="trailing" secondItem="KJA-G4-X1A" secondAttribute="trailing" id="centre-trail"/>
+                                    <constraint firstItem="KJA-G4-X1A" firstAttribute="leading" secondItem="col-view-id" secondAttribute="leading" constant="20" id="metro-lead"/>
+                                    <constraint firstAttribute="trailing" secondItem="KJA-G4-X1A" secondAttribute="trailing" constant="20" id="metro-trail"/>
+                                    <constraint firstItem="9UG-EX-Q5A" firstAttribute="leading" secondItem="col-view-id" secondAttribute="leading" constant="20" id="nome-lead"/>
+                                    <constraint firstItem="9UG-EX-Q5A" firstAttribute="top" secondItem="9er-zt-vGC" secondAttribute="top" id="nome-top-centre"/>
+                                    <constraint firstAttribute="trailing" secondItem="9UG-EX-Q5A" secondAttribute="trailing" constant="20" id="nome-trail"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="u4I-fX-JQn"/>
-                        <color key="backgroundColor" name="AccentColor"/>
+                        <color key="backgroundColor" name="BackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="9UG-EX-Q5A" secondAttribute="trailing" constant="16" id="1Xi-1N-DgY"/>
-                            <constraint firstItem="9UG-EX-Q5A" firstAttribute="top" secondItem="9er-zt-vGC" secondAttribute="top" id="6AO-3a-P3n"/>
-                            <constraint firstItem="9UG-EX-Q5A" firstAttribute="leading" secondItem="V77-0K-Fof" secondAttribute="leading" constant="16" id="GFg-ub-92a"/>
-                            <constraint firstItem="9er-zt-vGC" firstAttribute="bottom" secondItem="KJA-G4-X1A" secondAttribute="bottom" id="Kva-YY-QaZ"/>
-                            <constraint firstItem="9er-zt-vGC" firstAttribute="centerY" secondItem="V77-0K-Fof" secondAttribute="centerY" id="XOm-1J-TQw"/>
-                            <constraint firstItem="9er-zt-vGC" firstAttribute="centerX" secondItem="V77-0K-Fof" secondAttribute="centerX" id="cwr-Ph-uFk"/>
-                            <constraint firstItem="9er-zt-vGC" firstAttribute="leading" secondItem="V77-0K-Fof" secondAttribute="leading" id="oxt-1G-QwD"/>
-                            <constraint firstAttribute="trailing" secondItem="KJA-G4-X1A" secondAttribute="trailing" constant="16" id="qOe-WT-0Lz"/>
-                            <constraint firstItem="KJA-G4-X1A" firstAttribute="leading" secondItem="V77-0K-Fof" secondAttribute="leading" constant="16" id="utt-nS-tSA"/>
-                            <constraint firstAttribute="trailing" secondItem="9er-zt-vGC" secondAttribute="trailing" id="wPO-hw-jTi"/>
+                            <constraint firstAttribute="bottom" secondItem="col-view-id" secondAttribute="bottom" id="col-bottom"/>
+                            <constraint firstItem="col-view-id" firstAttribute="centerX" secondItem="V77-0K-Fof" secondAttribute="centerX" id="col-centerX"/>
+                            <constraint firstItem="col-view-id" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="V77-0K-Fof" secondAttribute="leading" id="col-leading-gte"/>
+                            <constraint firstItem="col-view-id" firstAttribute="width" relation="lessThanOrEqual" constant="420" id="col-max-width"/>
+                            <constraint firstItem="col-view-id" firstAttribute="top" secondItem="V77-0K-Fof" secondAttribute="top" id="col-top"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="col-view-id" secondAttribute="trailing" id="col-trailing-gte"/>
+                            <constraint firstItem="col-view-id" firstAttribute="width" secondItem="V77-0K-Fof" secondAttribute="width" priority="750" id="col-width-pref"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ccF-sA-VB0" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="122.79069767441861" y="-27.038626609442062"/>
+            <point key="canvasLocation" x="122.40000000000001" y="-27.339901477832512"/>
         </scene>
     </scenes>
     <resources>
-        <image name="metro_" width="1586" height="746"/>
-        <image name="nome_" width="1586" height="746"/>
-        <namedColor name="AccentColor">
-            <color red="0.9179999828338623" green="0.9179999828338623" blue="0.9179999828338623" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <image name="metro_" width="1254" height="590"/>
+        <image name="nome_" width="1254" height="590"/>
+        <namedColor name="BackgroundColor">
+            <color red="0.83499997854232788" green="0.84700000286102295" blue="0.86699998378753662" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

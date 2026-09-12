@@ -20,53 +20,5 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A246E63C-C79D-48F2-8309-B39DF83ADFCF"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ometronome/ViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "switchTap(sender:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "A246E63C-C79D-48F2-8309-B39DF83ADFCF - 45222ea0ba70d42d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Metronome.ViewController.switchTap(sender: __C.UITapGestureRecognizer) -&gt; ()"
-                  moduleName = "Metronome"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/administrator/XcodeProjects/ometronome/ometronome/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "61"
-                  endingLineNumber = "61"
-                  offsetFromSymbolStart = "578">
-               </Location>
-               <Location
-                  uuid = "A246E63C-C79D-48F2-8309-B39DF83ADFCF - b886bd7cf318b762"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in Metronome.ViewController.switchTap(sender: __C.UITapGestureRecognizer) -&gt; ()"
-                  moduleName = "Metronome"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/administrator/XcodeProjects/ometronome/ometronome/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "63"
-                  endingLineNumber = "63"
-                  offsetFromSymbolStart = "40">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

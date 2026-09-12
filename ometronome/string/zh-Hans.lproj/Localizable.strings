@@ -1,0 +1,8 @@
+"app_name" = "Metronome";
+"status" = "点击以恢复";
+"no_flash" = "不支持的功能";
+"dialog_body" = "您的反馈对我们非常重要！\n请在店铺页面留言。";
+"dialog_head" = "请给我们评分!";
+"dialog_cancel" = "稍后评分";
+"dialog_ok" = "立即评分";
+"press_to_start" = "按下以开始";
