@@ -1,0 +1,85 @@
+workflows:
+  ios-app-store:
+    name: iOS App Store Publish
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      xcode: latest
+      groups:
+        - app_store_credentials
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Update project build number
+        script: |
+          agvtool new-version -all $BUILD_NUMBER
+      - name: Initialize keychain
+        script: |
+          keychain initialize
+      - name: Set up code signing certificates
+        script: |
+          if [ -n "$CM_CERTIFICATE" ]; then
+            echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
+            keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
+          else
+            keychain add-certificates
+          fi
+      - name: Set up provisioning profile
+        script: |
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          if [ -n "$CM_PROVISIONING_PROFILE" ]; then
+            echo $CM_PROVISIONING_PROFILE | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          fi
+      - name: Verify Code Signing Setup (App Store vs Development)
+        script: |
+          echo "=== 1. Keychain Certificates ==="
+          security find-identity -v -p codesigning
+          
+          echo "=== 2. Installed Provisioning Profiles ==="
+          PROFILES=(~/Library/MobileDevice/Provisioning\ Profiles/*)
+          if [ ! -f "${PROFILES[0]}" ]; then
+            echo "❌ ERROR: No provisioning profile found in ~/Library/MobileDevice/Provisioning Profiles/"
+            exit 1
+          fi
+
+          for profile in "${PROFILES[@]}"; do
+            echo "Inspecting profile: $profile"
+            security cms -D -i "$profile" > /tmp/profile.plist
+            
+            GET_TASK_ALLOW=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:get-task-allow" /tmp/profile.plist 2>/dev/null || echo "false")
+            HAS_DEVICES=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" /tmp/profile.plist 2>/dev/null || echo "none")
+            
+            echo "get-task-allow: $GET_TASK_ALLOW"
+            echo "ProvisionedDevices: $HAS_DEVICES"
+            
+            if [ "$GET_TASK_ALLOW" = "true" ] || [ "$HAS_DEVICES" != "none" ]; then
+              echo "❌ ERROR: The installed provisioning profile is a DEVELOPMENT profile."
+              echo "App Store Connect requires an APP STORE DISTRIBUTION profile."
+              echo "Halting build early to prevent invalid submission."
+              exit 1
+            else
+              echo "✅ SUCCESS: Installed provisioning profile is an APP STORE DISTRIBUTION profile!"
+            fi
+          done
+      - name: Set up code signing settings
+        script: |
+          xcode-project use-profiles
+      - name: Build Xcode Archive and Export IPA
+        script: |
+          xcode-project build-ipa \
+            --project ometronome.xcodeproj \
+            --scheme Metronome \
+            --config Release
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true

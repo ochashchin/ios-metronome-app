@@ -96,7 +96,8 @@ public final class ReviewManager: ObservableObject {
     public static let shared = ReviewManager()
     private let key = "review"
     private let targetCount = 3
-    private let dialogDelay = 3.2
+    // 4. Review Prompt Dialog triggers 1000ms after Ads (4.45s total from app launch)
+    private let dialogDelay = 4.45
     
     @Published public var shouldShowDialog = false
     public var onShowDialog: (() -> Void)?
@@ -110,7 +111,7 @@ public final class ReviewManager: ObservableObject {
     
     public func checkReviewTrigger() {
         if CommandLine.arguments.contains("-UITestShowReviewDialog") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.45) { [weak self] in
                 self?.shouldShowDialog = true
                 self?.onShowDialog?()
             }
@@ -142,7 +143,7 @@ public final class ReviewManager: ObservableObject {
         // Opening App Store URLs in Simulator causes Safari to fail with:
         // "Safari cannot open the page because the address is invalid."
         // We trigger StoreKit in-app review instead so it tests cleanly on simulator.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.45) {
             if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
                 SKStoreReviewController.requestReview(in: windowScene)
             }

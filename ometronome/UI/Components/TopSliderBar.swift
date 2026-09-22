@@ -172,7 +172,7 @@ public class TopSliderBar: UIView {
             self?.hideTooltip()
         }
         tooltipDismissWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.6, execute: workItem)
     }
     
     private func imageNamed(_ name: String) -> UIImage? {

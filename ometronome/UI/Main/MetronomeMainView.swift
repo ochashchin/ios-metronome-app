@@ -158,8 +158,8 @@ public struct MetronomeMainView: View {
     }
     
     private func startSplashAnimation() {
-        // Initial delay before kinetic motion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        // 1. Launch Screen / Splash delay (600 ms)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             withAnimation(.spring(response: 0.85, dampingFraction: 0.65)) {
                 metroOffset = -600
                 nomeOffset = -700
@@ -169,7 +169,8 @@ public struct MetronomeMainView: View {
                 controlsScale = 1.0
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
+            // 2. Motion completes (0.85s) + 1000ms delay in between -> Tooltip (2.45s total from launch)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.85) {
                 splashAnimating = false
                 // Trigger onboarding tooltip
                 withAnimation(.easeIn(duration: 0.25)) {

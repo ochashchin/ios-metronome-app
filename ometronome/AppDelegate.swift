@@ -10,6 +10,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         MobileAds.shared.start(completionHandler: nil)
 
+        // Delay for launch screen storyboard
+        Thread.sleep(forTimeInterval: 0.6)
+
         // Override point for customization after application launch.
         return true
     }

@@ -98,12 +98,12 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         
         // Automated UI test support
         if CommandLine.arguments.contains("-UITestStartPlaying") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.45) { [weak self] in
                 self?.engine.start()
             }
         }
         if CommandLine.arguments.contains("-UITestTriggerRateNow") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.45) {
                 ReviewManager.shared.rateNow()
             }
         }

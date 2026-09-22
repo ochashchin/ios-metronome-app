@@ -105,47 +105,52 @@ public class AdBannerContainerView: UIView, BannerViewDelegate {
             return
         }
         
-        let viewWidth: CGFloat
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            viewWidth = window.frame.inset(by: window.safeAreaInsets).width
-        } else {
-            viewWidth = rootViewController.view.bounds.width
-        }
-        
-        // Match Android getAdSize(): deduct standard horizontal padding (16dp left + 16dp right)
-        let adWidth = max(0, viewWidth - 32)
-        guard adWidth > 0 else { return }
-        
-        let adaptiveSize = currentOrientationAnchoredAdaptiveBanner(width: adWidth)
-        
-        if bannerView == nil {
-            let banner = BannerView(adSize: adaptiveSize)
-            banner.translatesAutoresizingMaskIntoConstraints = false
-            banner.layer.cornerRadius = 12
-            banner.layer.masksToBounds = true
-            banner.clipsToBounds = true
-            if #available(iOS 13.0, *) {
-                banner.layer.cornerCurve = .continuous
-            }
-            banner.adUnitID = adUnitID
-            banner.rootViewController = rootViewController
-            banner.delegate = self
-            cardView.addSubview(banner)
+        // 3. Ads load 1000ms after Tooltip (3.45s total from app launch)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.45) { [weak self, weak rootViewController] in
+            guard let self = self, let rootViewController = rootViewController else { return }
             
-            NSLayoutConstraint.activate([
-                banner.topAnchor.constraint(equalTo: cardView.topAnchor),
-                banner.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
-                banner.trailingAnchor.constraint(equalTo: cardView.trailingAnchor),
-                banner.bottomAnchor.constraint(equalTo: cardView.bottomAnchor)
-            ])
-            self.bannerView = banner
-        } else {
-            bannerView?.adSize = adaptiveSize
+            let viewWidth: CGFloat
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                viewWidth = window.frame.inset(by: window.safeAreaInsets).width
+            } else {
+                viewWidth = rootViewController.view.bounds.width
+            }
+            
+            // Match Android getAdSize(): deduct standard horizontal padding (16dp left + 16dp right)
+            let adWidth = max(0, viewWidth - 32)
+            guard adWidth > 0 else { return }
+            
+            let adaptiveSize = currentOrientationAnchoredAdaptiveBanner(width: adWidth)
+            
+            if self.bannerView == nil {
+                let banner = BannerView(adSize: adaptiveSize)
+                banner.translatesAutoresizingMaskIntoConstraints = false
+                banner.layer.cornerRadius = 12
+                banner.layer.masksToBounds = true
+                banner.clipsToBounds = true
+                if #available(iOS 13.0, *) {
+                    banner.layer.cornerCurve = .continuous
+                }
+                banner.adUnitID = self.adUnitID
+                banner.rootViewController = rootViewController
+                banner.delegate = self
+                self.cardView.addSubview(banner)
+                
+                NSLayoutConstraint.activate([
+                    banner.topAnchor.constraint(equalTo: self.cardView.topAnchor),
+                    banner.leadingAnchor.constraint(equalTo: self.cardView.leadingAnchor),
+                    banner.trailingAnchor.constraint(equalTo: self.cardView.trailingAnchor),
+                    banner.bottomAnchor.constraint(equalTo: self.cardView.bottomAnchor)
+                ])
+                self.bannerView = banner
+            } else {
+                self.bannerView?.adSize = adaptiveSize
+            }
+            
+            let request = Request()
+            self.bannerView?.load(request)
         }
-        
-        let request = Request()
-        bannerView?.load(request)
     }
     
     // MARK: - BannerViewDelegate
