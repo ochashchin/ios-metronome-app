@@ -17,6 +17,30 @@ workflows:
       - name: Update project build number
         script: |
           agvtool new-version -all $BUILD_NUMBER
+      - name: Decode App Store Connect API Key
+        script: |
+          python3 << 'EOF'
+          import os, base64
+          b64_key = os.environ.get("APP_STORE_CONNECT_PRIVATE_KEY", "")
+          try:
+              pem_bytes = base64.b64decode(b64_key)
+              pem_str = pem_bytes.decode("utf-8").strip()
+              if "BEGIN PRIVATE KEY" in pem_str:
+                  print("✅ Successfully decoded base64-encoded PEM key")
+              else:
+                  print("⚠️ Decoded content does not look like a PEM key, using raw value")
+                  pem_str = b64_key
+          except Exception:
+              print("⚠️ Value is not base64, using raw value")
+              pem_str = b64_key
+          cm_env = os.environ.get("CM_ENV", "")
+          if cm_env:
+              with open(cm_env, "a") as f:
+                  f.write(f"APP_STORE_CONNECT_PRIVATE_KEY<<CODEMAGIC\n{pem_str}\nCODEMAGIC\n")
+              print("✅ Written decoded key to CM_ENV using heredoc syntax")
+          else:
+              print("❌ CM_ENV not set")
+          EOF
       - name: Initialize keychain
         script: |
           keychain initialize
