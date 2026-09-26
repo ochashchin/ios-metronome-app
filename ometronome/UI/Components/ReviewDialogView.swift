@@ -25,8 +25,8 @@ public struct ReviewDialogView: View {
                 }
             
             VStack(spacing: 0) {
-                // Trending Icon matching Android @drawable/trending_up
-                Image("trending_up")
+                // Smiling face icon matching Android @drawable/mood_24px
+                Image("mood_24px")
                     .renderingMode(.template)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
