@@ -208,7 +208,7 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
     // MARK: - MetronomeEngineDelegate
     
     func metronomeEngineStateDidChange(state: HomeState) {
-        topSliderBar?.setPlaying(state.isPlaying, mode: state.mode)
+        topSliderBar?.setPlaying(state.isPlaying)
         bottomSliderBar?.setPlaying(state.isPlaying)
         flashOverlay.setPlaying(state.isPlaying, mode: state.mode)
     }
@@ -217,9 +217,6 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         if state.flashBlink {
             view.bringSubviewToFront(flashOverlay)
             flashOverlay.blink()
-        }
-        if state.pulseBounce {
-            topSliderBar?.pulse()
         }
     }
     
@@ -239,6 +236,5 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         flashOverlay.reset()
-        topSliderBar?.resetPulse()
     }
 }

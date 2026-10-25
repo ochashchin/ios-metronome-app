@@ -69,9 +69,6 @@ public final class HomeViewModel: ObservableObject, MetronomeEngineDelegate {
         if state.flashBlink {
             triggerFlashSimulation()
         }
-        if state.pulseBounce {
-            triggerPulseSimulation()
-        }
     }
     
     public func metronomeEngineStateDidChange(state: HomeState) {

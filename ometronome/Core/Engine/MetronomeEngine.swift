@@ -148,7 +148,7 @@ public final class MetronomeEngine {
             return self.state.copyFlashBlink()
         case .pulse:
             vibrator.vibrate()
-            return self.state.copyPulseBounce()
+            return self.state
         }
     }
     
