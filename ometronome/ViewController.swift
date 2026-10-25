@@ -317,8 +317,8 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         let vignetteFadeDuration: TimeInterval = 0.8
         let controlsDelay: TimeInterval = 2.5 / 3.0 // ~0.833s (reduced 3x from 2.5s)
         let controlsStartTime: TimeInterval = holdDelay + controlsDelay // ~2.833s
-        let controlsDuration: TimeInterval = 2.0
-        let completionTime: TimeInterval = controlsStartTime + controlsDuration // ~4.833s
+        let controlsDuration: TimeInterval = 1.5
+        let completionTime: TimeInterval = controlsStartTime + controlsDuration // ~4.333s
         
         let workItem1 = DispatchWorkItem { [weak self] in
             guard let self = self, let intro = self.splashIntroView else { return }
@@ -332,7 +332,7 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         let workItem2 = DispatchWorkItem { [weak self] in
             guard let self = self, let controls = self.controlsContainer else { return }
             controls.transform = .identity
-            let anim = AndroidInterpolator.createTranslationXAnimation(
+            let anim = AndroidInterpolator.createOvershootTranslationXAnimation(
                 from: self.view.bounds.width,
                 to: 0,
                 duration: controlsDuration,

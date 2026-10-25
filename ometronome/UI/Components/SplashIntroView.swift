@@ -32,6 +32,43 @@ public enum AndroidInterpolator {
         }
     }
     
+    /// Android's OvershootInterpolator(tension) for entering elements
+    /// public float getInterpolation(float t) {
+    ///     t -= 1.0f;
+    ///     return t * t * ((mTension + 1) * t + mTension) + 1.0f;
+    /// }
+    public static func overshoot(t: CGFloat, tension: CGFloat = 1.0) -> CGFloat {
+        let t1 = t - 1.0
+        return t1 * t1 * ((tension + 1.0) * t1 + tension) + 1.0
+    }
+    
+    public static func createOvershootTranslationXAnimation(
+        from: CGFloat,
+        to: CGFloat,
+        duration: TimeInterval,
+        tension: CGFloat = 1.0,
+        sampleCount: Int = 120
+    ) -> CAKeyframeAnimation {
+        var values: [CGFloat] = []
+        var keyTimes: [NSNumber] = []
+        
+        for i in 0...sampleCount {
+            let t = CGFloat(i) / CGFloat(sampleCount)
+            let interp = overshoot(t: t, tension: tension)
+            let val = from + (to - from) * interp
+            values.append(val)
+            keyTimes.append(NSNumber(value: Double(t)))
+        }
+        
+        let anim = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        anim.values = values
+        anim.keyTimes = keyTimes
+        anim.duration = duration
+        anim.fillMode = .forwards
+        anim.isRemovedOnCompletion = false
+        return anim
+    }
+    
     public static func createTranslationXAnimation(
         from: CGFloat,
         to: CGFloat,
