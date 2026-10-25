@@ -1,0 +1,223 @@
+name: iOS TestFlight Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Custom build number (leave empty for auto-increment starting from 10)'
+        required: false
+        type: string
+      submit_to_testflight:
+        description: 'Upload and submit to TestFlight'
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy iOS App to TestFlight
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.x'
+
+      - name: Verify Xcode version
+        run: xcodebuild -version
+
+      - name: Determine and apply build version
+        run: |
+          if [ -n "${{ inputs.build_number }}" ]; then
+            BUILD_NUM="${{ inputs.build_number }}"
+          else
+            # Starts from 10 and increments with each run (Run 1 -> 10, Run 2 -> 11, etc.)
+            BUILD_NUM=$((9 + GITHUB_RUN_NUMBER))
+          fi
+          echo "Setting CFBundleVersion (Build Number): $BUILD_NUM"
+          agvtool new-version -all "$BUILD_NUM"
+          echo "BUILD_NUMBER=$BUILD_NUM" >> $GITHUB_ENV
+          
+          MARKETING_VER=$(grep "MARKETING_VERSION" ometronome.xcodeproj/project.pbxproj | head -n 1 | awk '{print $3}' | tr -d ';')
+          echo "Current Marketing Version: $MARKETING_VER"
+          echo "MARKETING_VERSION=$MARKETING_VER" >> $GITHUB_ENV
+
+      - name: Set up Signing Keychain
+        env:
+          CERT_BASE64: ${{ secrets.CM_CERTIFICATE || secrets.BUILD_CERTIFICATE_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.CM_CERTIFICATE_PASSWORD || secrets.P12_PASSWORD }}
+        run: |
+          if [ -z "$CERT_BASE64" ]; then
+            echo "❌ ERROR: Certificate secret is missing." ; exit 1
+          fi
+
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 12)
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$CERT_BASE64" | base64 --decode > /tmp/certificate.p12
+          security import /tmp/certificate.p12 -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | tr -d '"')
+          rm -f /tmp/certificate.p12
+
+      - name: Set up Provisioning Profile
+        env:
+          PROFILE_BASE64: ${{ secrets.CM_PROVISIONING_PROFILE || secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        run: |
+          if [ -z "$PROFILE_BASE64" ]; then
+            echo "❌ ERROR: Provisioning profile secret is missing." ; exit 1
+          fi
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROFILE_BASE64" | base64 --decode > /tmp/profile.mobileprovision
+
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i /tmp/profile.mobileprovision))
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< $(security cms -D -i /tmp/profile.mobileprovision))
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" /dev/stdin <<< $(security cms -D -i /tmp/profile.mobileprovision) | sed 's/^[^.]*\.//')
+          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" /dev/stdin <<< $(security cms -D -i /tmp/profile.mobileprovision))
+
+          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+          echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
+          echo "BUNDLE_ID=$BUNDLE_ID" >> $GITHUB_ENV
+          echo "TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
+
+      - name: Verify Code Signing Setup (App Store vs Development)
+        run: |
+          echo "=== 1. Keychain Certificates ==="
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          echo "=== 2. Installed Provisioning Profile ==="
+          echo "Profile Name: $PROFILE_NAME"
+          echo "Profile UUID: $PROFILE_UUID"
+          echo "Bundle ID: $BUNDLE_ID"
+          echo "Team ID: $TEAM_ID"
+
+          security cms -D -i /tmp/profile.mobileprovision > /tmp/profile.plist
+          GET_TASK_ALLOW=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:get-task-allow" /tmp/profile.plist 2>/dev/null || echo "false")
+          HAS_DEVICES=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" /tmp/profile.plist 2>/dev/null || echo "none")
+
+          if [ "$GET_TASK_ALLOW" = "true" ] || [ "$HAS_DEVICES" != "none" ]; then
+            echo "❌ ERROR: The installed provisioning profile is a DEVELOPMENT profile."
+            echo "App Store Connect requires an APP STORE DISTRIBUTION profile."
+            exit 1
+          else
+            echo "✅ SUCCESS: Installed provisioning profile is an APP STORE DISTRIBUTION profile!"
+          fi
+
+      - name: Build Xcode Archive
+        run: |
+          xcodebuild archive \
+            -project ometronome.xcodeproj \
+            -scheme Metronome \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/ometronome.xcarchive \
+            -destination "generic/platform=iOS" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"
+
+      - name: Export IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/export
+          cat <<EOF > $RUNNER_TEMP/ExportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store-connect</string>
+              <key>teamID</key>
+              <string>$TEAM_ID</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>$BUNDLE_ID</key>
+                  <string>$PROFILE_NAME</string>
+              </dict>
+              <key>destination</key>
+              <string>export</string>
+              <key>manageAppVersionAndBuildNumber</key>
+              <false/>
+              <key>stripSwiftSymbols</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/ometronome.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
+            -exportPath $RUNNER_TEMP/export
+
+          IPA_FILE=$(find $RUNNER_TEMP/export -name "*.ipa" | head -n 1)
+          if [ -z "$IPA_FILE" ]; then
+            echo "❌ ERROR: No exported IPA found in $RUNNER_TEMP/export"
+            exit 1
+          fi
+          echo "Successfully exported IPA at: $IPA_FILE"
+          echo "IPA_PATH=$IPA_FILE" >> $GITHUB_ENV
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Metronome-v${{ env.MARKETING_VERSION }}-b${{ env.BUILD_NUMBER }}.ipa
+          path: ${{ env.IPA_PATH }}
+          if-no-files-found: error
+
+      - name: Upload to App Store Connect / TestFlight
+        if: ${{ inputs.submit_to_testflight != false }}
+        env:
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          if [ -z "$APP_STORE_CONNECT_PRIVATE_KEY" ] || [ -z "$APP_STORE_CONNECT_KEY_IDENTIFIER" ] || [ -z "$APP_STORE_CONNECT_ISSUER_ID" ]; then
+            echo "⚠️ WARNING: App Store Connect API keys are missing. Skipping TestFlight upload."
+            exit 0
+          fi
+
+          mkdir -p ~/.appstoreconnect/private_keys
+          if echo "$APP_STORE_CONNECT_PRIVATE_KEY" | grep -q "BEGIN PRIVATE KEY"; then
+            echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          else
+            echo "$APP_STORE_CONNECT_PRIVATE_KEY" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          fi
+          
+          echo "Uploading $IPA_PATH to App Store Connect / TestFlight..."
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+          echo "✅ Successfully uploaded to TestFlight!"
+
+      - name: Clean up Keychain & Sensitive Files
+        if: always()
+        run: |
+          if [ -n "$KEYCHAIN_PATH" ] && [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+          rm -rf ~/.appstoreconnect/private_keys || true
+          rm -f /tmp/profile.mobileprovision /tmp/profile.plist || true
