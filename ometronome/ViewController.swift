@@ -32,13 +32,27 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
     private let adBannerContainer = AdBannerContainerView()
     private var reviewController: UIHostingController<ReviewDialogView>?
     
+    // Splash Intro (Android match)
+    private var splashIntroView: SplashIntroView?
+    private var splashWorkItems: [DispatchWorkItem] = []
+    
+    private var isUITesting: Bool {
+        return CommandLine.arguments.contains("-UITestStartPlaying") ||
+               CommandLine.arguments.contains("-UITestShowReviewDialog") ||
+               CommandLine.arguments.contains("-UITestTriggerRateNow") ||
+               CommandLine.arguments.contains("-UITestModeFlash") ||
+               CommandLine.arguments.contains("-UITestModePulse") ||
+               CommandLine.arguments.contains("-UITestFastForward")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
-        // Android controls screen uses flat background color without vignette
-        vignetteImageView?.isHidden = true
+        // Vignette is initially transparent and fades in with intro exit
+        vignetteImageView?.isHidden = false
+        vignetteImageView?.alpha = isUITesting ? 1.0 : 0.0
         
         // Setup BPM Label
         if let bpm = bpmLabel {
@@ -96,6 +110,9 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         
         // Setup Review Prompt
         setupReviewPrompt()
+        
+        // Setup Android-identical Splash Intro Animation
+        setupSplashIntro()
         
         // Automated UI test support
         if CommandLine.arguments.contains("-UITestStartPlaying") {
@@ -252,6 +269,107 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         }
     }
     
+    // MARK: - Splash Intro Animation (Android match)
+    
+    private func setupSplashIntro() {
+        guard !isUITesting else {
+            vignetteImageView?.isHidden = false
+            vignetteImageView?.alpha = 1.0
+            controlsContainer?.transform = .identity
+            topSliderBar?.showTooltip(autoDismiss: true)
+            return
+        }
+        
+        // Hide tooltip on launch until controls finish entering
+        topSliderBar?.hideTooltipImmediately()
+        
+        // Hide ad banner initially so splash is completely clean
+        adBannerContainer.alpha = 0.0
+        
+        // Position controls offscreen to the right (matching Android app:layout_constraintStart_toEndOf="parent")
+        let screenWidth = UIScreen.main.bounds.width
+        controlsContainer.transform = CGAffineTransform(translationX: screenWidth, y: 0)
+        
+        let introView = SplashIntroView()
+        introView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(introView, belowSubview: flashOverlay)
+        
+        NSLayoutConstraint.activate([
+            introView.topAnchor.constraint(equalTo: view.topAnchor),
+            introView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            introView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            introView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
+        splashIntroView = introView
+        introView.onTapToSkip = { [weak self] in
+            self?.fastForwardSplashIntro()
+        }
+        
+        // Schedule animations matching Android timing:
+        // 1. Initial 2000ms hold (SplashViewModel.splashOn)
+        // 2. At 2000ms: metro & nome exit left (duration 1500ms, tension 1.5 & 1.0), vignette fades in (800ms)
+        // 3. At 4500ms (2000ms + 2500ms startDelay): controls enters from right (duration 2000ms, tension 1.0)
+        // 4. At 6500ms: controls settles, tooltip shown (setTooltip(true))
+        
+        let workItem1 = DispatchWorkItem { [weak self] in
+            guard let self = self, let intro = self.splashIntroView else { return }
+            let exitDistance = max(self.view.bounds.width, self.view.bounds.height) + 100
+            intro.animateLogosExit(exitDistance: exitDistance, duration: 1.5)
+            UIView.animate(withDuration: 0.8) {
+                self.vignetteImageView?.alpha = 1.0
+            }
+        }
+        
+        let workItem2 = DispatchWorkItem { [weak self] in
+            guard let self = self, let controls = self.controlsContainer else { return }
+            let anim = AndroidInterpolator.createTranslationXAnimation(
+                from: self.view.bounds.width,
+                to: 0,
+                duration: 2.0,
+                tension: 1.0
+            )
+            controls.layer.add(anim, forKey: "controlsSlideIn")
+            UIView.animate(withDuration: 0.5) {
+                self.adBannerContainer.alpha = 1.0
+            }
+        }
+        
+        let workItem3 = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.controlsContainer?.layer.removeAnimation(forKey: "controlsSlideIn")
+            self.controlsContainer?.transform = .identity
+            self.splashIntroView?.removeFromSuperview()
+            self.splashIntroView = nil
+            self.topSliderBar?.showTooltip(autoDismiss: true)
+        }
+        
+        splashWorkItems = [workItem1, workItem2, workItem3]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem1)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.5, execute: workItem2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6.5, execute: workItem3)
+    }
+    
+    private func fastForwardSplashIntro() {
+        for item in splashWorkItems {
+            item.cancel()
+        }
+        splashWorkItems.removeAll()
+        
+        splashIntroView?.layer.removeAllAnimations()
+        splashIntroView?.removeFromSuperview()
+        splashIntroView = nil
+        
+        vignetteImageView?.isHidden = false
+        vignetteImageView?.alpha = 1.0
+        adBannerContainer.alpha = 1.0
+        
+        controlsContainer?.layer.removeAllAnimations()
+        controlsContainer?.transform = .identity
+        
+        topSliderBar?.showTooltip(autoDismiss: true)
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         flashOverlay.reset()

@@ -15,7 +15,7 @@ public class TopSliderBar: UIView {
     // State
     public private(set) var progress: Float = 15.56 // Default 68 BPM (68 - 40) / 1.8 ≈ 15.56%
     public private(set) var isPlaying: Bool = false
-    public private(set) var tooltipVisible: Bool = true
+    public private(set) var tooltipVisible: Bool = false
     
     private let maxTotalRotation: CGFloat = 270.0 // -45° to +225°
     private var tooltipDismissWorkItem: DispatchWorkItem?
@@ -150,6 +150,8 @@ public class TopSliderBar: UIView {
         tooltipContainer.layer.cornerRadius = 4
         tooltipContainer.layer.masksToBounds = true
         tooltipContainer.isUserInteractionEnabled = false
+        tooltipContainer.alpha = 0
+        tooltipContainer.isHidden = true
         containerView.addSubview(tooltipContainer)
         
         tooltipLabel.text = NSLocalizedString("press_to_start", comment: "Press to Start")
@@ -157,9 +159,6 @@ public class TopSliderBar: UIView {
         tooltipLabel.textColor = .white
         tooltipLabel.textAlignment = .center
         tooltipContainer.addSubview(tooltipLabel)
-        
-        // Auto-dismiss tooltip after 3000ms timeout matching Android showTooltip(3000L)
-        scheduleTooltipDismiss()
         
         // Drag Gesture for rotary control
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
@@ -353,6 +352,30 @@ public class TopSliderBar: UIView {
         if playing && tooltipVisible {
             hideTooltip()
         }
+    }
+    
+    public func showTooltip(autoDismiss: Bool = true) {
+        tooltipDismissWorkItem?.cancel()
+        tooltipDismissWorkItem = nil
+        tooltipVisible = true
+        tooltipContainer.isHidden = false
+        tooltipContainer.alpha = 0
+        tooltipContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
+            self.tooltipContainer.alpha = 1.0
+            self.tooltipContainer.transform = .identity
+        }
+        if autoDismiss {
+            scheduleTooltipDismiss()
+        }
+    }
+    
+    public func hideTooltipImmediately() {
+        tooltipDismissWorkItem?.cancel()
+        tooltipDismissWorkItem = nil
+        tooltipVisible = false
+        tooltipContainer.alpha = 0
+        tooltipContainer.isHidden = true
     }
     
     public func hideTooltip() {
