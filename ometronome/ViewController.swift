@@ -315,10 +315,10 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         let holdDelay: TimeInterval = 2.0
         let logoExitDuration: TimeInterval = 1.5
         let vignetteFadeDuration: TimeInterval = 0.8
-        let controlsDelay: TimeInterval = 2.5 / 3.0 // ~0.833s (reduced 3x from 2.5s)
-        let controlsStartTime: TimeInterval = holdDelay + controlsDelay // ~2.833s
+        let controlsDelay: TimeInterval = 0.625 // Reduced by 25% from ~0.833s
+        let controlsStartTime: TimeInterval = holdDelay + controlsDelay // 2.625s
         let controlsDuration: TimeInterval = 1.5
-        let completionTime: TimeInterval = controlsStartTime + controlsDuration // ~4.333s
+        let completionTime: TimeInterval = controlsStartTime + controlsDuration // 4.125s
         
         let workItem1 = DispatchWorkItem { [weak self] in
             guard let self = self, let intro = self.splashIntroView else { return }
