@@ -7,6 +7,10 @@ on:
         description: 'Custom build number (leave empty for auto-increment starting from 10)'
         required: false
         type: string
+      marketing_version:
+        description: 'Custom marketing version (e.g. 1.3). Leave empty to use project version.'
+        required: false
+        type: string
       submit_to_testflight:
         description: 'Upload and submit to TestFlight'
         required: false
@@ -20,7 +24,7 @@ concurrency:
 jobs:
   build-and-deploy:
     name: Build & Deploy iOS App to TestFlight
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
 
     steps:
@@ -32,7 +36,7 @@ jobs:
       - name: Select Xcode version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.x'
+          xcode-version: '26.x'
 
       - name: Verify Xcode version
         run: xcodebuild -version
@@ -49,7 +53,13 @@ jobs:
           agvtool new-version -all "$BUILD_NUM"
           echo "BUILD_NUMBER=$BUILD_NUM" >> $GITHUB_ENV
           
-          MARKETING_VER=$(grep "MARKETING_VERSION" ometronome.xcodeproj/project.pbxproj | head -n 1 | awk '{print $3}' | tr -d ';')
+          if [ -n "${{ inputs.marketing_version }}" ]; then
+            MARKETING_VER="${{ inputs.marketing_version }}"
+            echo "Applying custom marketing version: $MARKETING_VER"
+            sed -i '' "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $MARKETING_VER;/g" ometronome.xcodeproj/project.pbxproj
+          else
+            MARKETING_VER=$(grep "MARKETING_VERSION" ometronome.xcodeproj/project.pbxproj | head -n 1 | awk '{print $3}' | tr -d ';')
+          fi
           echo "Current Marketing Version: $MARKETING_VER"
           echo "MARKETING_VERSION=$MARKETING_VER" >> $GITHUB_ENV
 

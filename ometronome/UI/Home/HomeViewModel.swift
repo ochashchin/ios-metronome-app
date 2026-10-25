@@ -31,17 +31,6 @@ public final class HomeViewModel: ObservableObject, MetronomeEngineDelegate {
         self.state = metronome.state
         
         metronome.delegate = self
-        
-        // Attach simulator visual feedback callbacks
-        flash.onBlinkSimulated = { [weak self] in
-            guard let self = self, self.state.isPlaying, self.state.mode == .flash else { return }
-            self.triggerFlashSimulation()
-        }
-        
-        haptics.onVibrateSimulated = { [weak self] in
-            guard let self = self, self.state.isPlaying, self.state.mode == .pulse else { return }
-            self.triggerPulseSimulation()
-        }
     }
     
     public func toggle() {
@@ -77,6 +66,12 @@ public final class HomeViewModel: ObservableObject, MetronomeEngineDelegate {
     
     public func metronomeEngineDidTick(state: HomeState) {
         self.state = state
+        if state.flashBlink {
+            triggerFlashSimulation()
+        }
+        if state.pulseBounce {
+            triggerPulseSimulation()
+        }
     }
     
     public func metronomeEngineStateDidChange(state: HomeState) {

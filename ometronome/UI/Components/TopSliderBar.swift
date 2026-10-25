@@ -344,7 +344,10 @@ public class TopSliderBar: UIView {
         setProgress(calculatedProgress)
     }
     
-    public func setPlaying(_ playing: Bool) {
+    public func setPlaying(_ playing: Bool, mode: Mode? = nil) {
+        if !playing || mode != .pulse {
+            resetPulse()
+        }
         self.isPlaying = playing
         UIView.animate(withDuration: 0.1, delay: 0, options: [.curveLinear]) {
             self.centerButtonOff.alpha = playing ? 0.0 : 1.0
@@ -352,6 +355,41 @@ public class TopSliderBar: UIView {
         }
         if playing && tooltipVisible {
             hideTooltip()
+        }
+    }
+    
+    public func pulse() {
+        let action = { [weak self] in
+            guard let self = self else { return }
+            self.containerView.layer.removeAllAnimations()
+            self.containerView.transform = .identity
+            UIView.animate(withDuration: 0.05, delay: 0, options: [.curveEaseInOut], animations: {
+                self.containerView.transform = CGAffineTransform(scaleX: 1.03, y: 1.03)
+            }) { _ in
+                UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseInOut], animations: {
+                    self.containerView.transform = .identity
+                })
+            }
+        }
+        
+        if Thread.isMainThread {
+            action()
+        } else {
+            DispatchQueue.main.async(execute: action)
+        }
+    }
+    
+    public func resetPulse() {
+        let action = { [weak self] in
+            guard let self = self else { return }
+            self.containerView.layer.removeAllAnimations()
+            self.containerView.transform = .identity
+        }
+        
+        if Thread.isMainThread {
+            action()
+        } else {
+            DispatchQueue.main.async(execute: action)
         }
     }
     

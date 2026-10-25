@@ -20,6 +20,11 @@ public final class FlashController: FlashControlling {
     public var onBlinkSimulated: (() -> Void)?
     private let queue = DispatchQueue(label: "com.ometronome.flash", qos: .userInteractive)
     
+    // Latency compensation: delay torch onset slightly (~20ms) so it turns on
+    // in exact unison with the UI display pipeline frame rendering
+    private let torchOnDelaySeconds: Double = 0.020
+    private let torchDurationSeconds: Double = 0.040
+    
     public var hasTorch: Bool {
         guard let dev = device else { return false }
         return dev.hasTorch && dev.isTorchAvailable
@@ -37,21 +42,21 @@ public final class FlashController: FlashControlling {
             return
         }
         
-        queue.async {
+        queue.asyncAfter(deadline: .now() + torchOnDelaySeconds) { [weak self] in
+            guard let self = self, let dev = self.device, dev.hasTorch, dev.isTorchAvailable else { return }
             do {
-                try device.lockForConfiguration()
-                if device.torchMode != .on {
-                    try device.setTorchModeOn(level: AVCaptureDevice.maxAvailableTorchLevel)
+                try dev.lockForConfiguration()
+                if dev.torchMode != .on {
+                    try dev.setTorchModeOn(level: AVCaptureDevice.maxAvailableTorchLevel)
                 }
-                device.unlockForConfiguration()
+                dev.unlockForConfiguration()
                 
-                // Keep torch on for 30ms (matching Android FlashController)
-                DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 0.030) {
-                    guard device.hasTorch else { return }
+                self.queue.asyncAfter(deadline: .now() + self.torchDurationSeconds) {
+                    guard let activeDev = self.device, activeDev.hasTorch else { return }
                     do {
-                        try device.lockForConfiguration()
-                        device.torchMode = .off
-                        device.unlockForConfiguration()
+                        try activeDev.lockForConfiguration()
+                        activeDev.torchMode = .off
+                        activeDev.unlockForConfiguration()
                     } catch {}
                 }
             } catch {

@@ -36,6 +36,7 @@
 		C3F0011329000000000000113 /* UI/Components/TopSliderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F1011329000000000000113 /* UI/Components/TopSliderBar.swift */; };
 		C3F0011429000000000000114 /* UI/Components/BottomSliderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F1011429000000000000114 /* UI/Components/BottomSliderBar.swift */; };
 		C3F0019929000000000000199 /* UI/Components/AdBannerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F1019929000000000000199 /* UI/Components/AdBannerContainerView.swift */; };
+		C3F002002900000000000200 /* UI/Components/FlashOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F102002900000000000200 /* UI/Components/FlashOverlayView.swift */; };
 		C3F109992900000000000099 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C3F109982900000000000098 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -132,6 +133,7 @@
 		C3F1011329000000000000113 /* UI/Components/TopSliderBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/Components/TopSliderBar.swift; sourceTree = "<group>"; };
 		C3F1011429000000000000114 /* UI/Components/BottomSliderBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/Components/BottomSliderBar.swift; sourceTree = "<group>"; };
 		C3F1019929000000000000199 /* UI/Components/AdBannerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/Components/AdBannerContainerView.swift; sourceTree = "<group>"; };
+		C3F102002900000000000200 /* UI/Components/FlashOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI/Components/FlashOverlayView.swift; sourceTree = "<group>"; };
 		C3F109982900000000000098 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -200,6 +202,7 @@
 				C3F1011029000000000000110 /* UI/Components/BottomSliderView.swift */,
 				C3F1011129000000000000111 /* UI/Components/ReviewDialogView.swift */,
 				C3F1019929000000000000199 /* UI/Components/AdBannerContainerView.swift */,
+				C3F102002900000000000200 /* UI/Components/FlashOverlayView.swift */,
 				C3F1011229000000000000112 /* UI/Main/MetronomeMainView.swift */,
 				C3F1011329000000000000113 /* UI/Components/TopSliderBar.swift */,
 				C3F1011429000000000000114 /* UI/Components/BottomSliderBar.swift */,
@@ -353,6 +356,7 @@
 				C3F0011029000000000000110 /* UI/Components/BottomSliderView.swift in Sources */,
 				C3F0011129000000000000111 /* UI/Components/ReviewDialogView.swift in Sources */,
 				C3F0019929000000000000199 /* UI/Components/AdBannerContainerView.swift in Sources */,
+				C3F002002900000000000200 /* UI/Components/FlashOverlayView.swift in Sources */,
 				C3F0011229000000000000112 /* UI/Main/MetronomeMainView.swift in Sources */,
 				C3F0011329000000000000113 /* UI/Components/TopSliderBar.swift in Sources */,
 				C3F0011429000000000000114 /* UI/Components/BottomSliderBar.swift in Sources */,
@@ -614,7 +618,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ometronome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -650,7 +654,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ometronome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
