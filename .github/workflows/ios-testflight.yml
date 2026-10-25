@@ -110,6 +110,14 @@ jobs:
           echo "Bundle ID: $BUNDLE_ID"
           echo "Team ID: $TEAM_ID"
 
+          PROJECT_BUNDLE_ID=$(grep "PRODUCT_BUNDLE_IDENTIFIER" ometronome.xcodeproj/project.pbxproj | head -n 1 | awk '{print $3}' | tr -d ';')
+          echo "Project Bundle ID: $PROJECT_BUNDLE_ID"
+          if [ "$BUNDLE_ID" != "$PROJECT_BUNDLE_ID" ] && [ "$BUNDLE_ID" != "*" ]; then
+            echo "❌ ERROR: Provisioning profile bundle ID ($BUNDLE_ID) does not match project bundle ID ($PROJECT_BUNDLE_ID)!"
+            echo "Please ensure the GitHub secret CM_PROVISIONING_PROFILE contains the profile for $PROJECT_BUNDLE_ID."
+            exit 1
+          fi
+
           security cms -D -i /tmp/profile.mobileprovision > /tmp/profile.plist
           GET_TASK_ALLOW=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:get-task-allow" /tmp/profile.plist 2>/dev/null || echo "false")
           HAS_DEVICES=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" /tmp/profile.plist 2>/dev/null || echo "none")
