@@ -306,17 +306,23 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
             self?.fastForwardSplashIntro()
         }
         
-        // Schedule animations matching Android timing:
-        // 1. Initial 2000ms hold (SplashViewModel.splashOn)
-        // 2. At 2000ms: metro & nome exit left (duration 1500ms, tension 1.5 & 1.0), vignette fades in (800ms)
-        // 3. At 4500ms (2000ms + 2500ms startDelay): controls enters from right (duration 2000ms, tension 1.0)
-        // 4. At 6500ms: controls settles, tooltip shown (setTooltip(true))
+        // Snappy kinetic intro timing (controls slide-in reduced ~3x):
+        // 1. Initial hold: 0.70s
+        // 2. Logo exit: 0.65s (tension 1.5 & 1.0), vignette fade: 0.40s
+        // 3. Controls slide-in: starts at 1.05s, duration 0.67s (tension 1.0)
+        // 4. Settle & tooltip: at 1.72s
+        let holdDelay: TimeInterval = 0.70
+        let logoExitDuration: TimeInterval = 0.65
+        let vignetteFadeDuration: TimeInterval = 0.40
+        let controlsStartTime: TimeInterval = 1.05
+        let controlsDuration: TimeInterval = 0.67
+        let completionTime: TimeInterval = controlsStartTime + controlsDuration
         
         let workItem1 = DispatchWorkItem { [weak self] in
             guard let self = self, let intro = self.splashIntroView else { return }
             let exitDistance = max(self.view.bounds.width, self.view.bounds.height) + 100
-            intro.animateLogosExit(exitDistance: exitDistance, duration: 1.5)
-            UIView.animate(withDuration: 0.8) {
+            intro.animateLogosExit(exitDistance: exitDistance, duration: logoExitDuration)
+            UIView.animate(withDuration: vignetteFadeDuration) {
                 self.vignetteImageView?.alpha = 1.0
             }
         }
@@ -326,11 +332,11 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
             let anim = AndroidInterpolator.createTranslationXAnimation(
                 from: self.view.bounds.width,
                 to: 0,
-                duration: 2.0,
+                duration: controlsDuration,
                 tension: 1.0
             )
             controls.layer.add(anim, forKey: "controlsSlideIn")
-            UIView.animate(withDuration: 0.5) {
+            UIView.animate(withDuration: 0.35) {
                 self.adBannerContainer.alpha = 1.0
             }
         }
@@ -345,9 +351,9 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         }
         
         splashWorkItems = [workItem1, workItem2, workItem3]
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem1)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.5, execute: workItem2)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 6.5, execute: workItem3)
+        DispatchQueue.main.asyncAfter(deadline: .now() + holdDelay, execute: workItem1)
+        DispatchQueue.main.asyncAfter(deadline: .now() + controlsStartTime, execute: workItem2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + completionTime, execute: workItem3)
     }
     
     private func fastForwardSplashIntro() {
