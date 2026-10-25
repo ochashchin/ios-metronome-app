@@ -27,10 +27,8 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         vibrator: hapticsEngine
     )
     
-    // Simulator visual indicator for flash
-    private var simulatorFlashOverlay: UIView?
-    
-    // Ad Banner & Review Dialog
+    // Flash Overlay & Ad Banner & Review Dialog
+    private let flashOverlay = FlashOverlayView()
     private let adBannerContainer = AdBannerContainerView()
     private var reviewController: UIHostingController<ReviewDialogView>?
     
@@ -87,8 +85,8 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         // Engine Delegate
         engine.delegate = self
         
-        // Simulator visual indicators
-        setupSimulatorIndicators()
+        // Setup Flash Overlay (Synchronized full-screen flash)
+        setupFlashOverlay()
         
         // Setup Ad Banner
         setupAdBanner()
@@ -210,47 +208,37 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
     // MARK: - MetronomeEngineDelegate
     
     func metronomeEngineStateDidChange(state: HomeState) {
-        topSliderBar?.setPlaying(state.isPlaying)
+        topSliderBar?.setPlaying(state.isPlaying, mode: state.mode)
         bottomSliderBar?.setPlaying(state.isPlaying)
+        flashOverlay.setPlaying(state.isPlaying, mode: state.mode)
     }
     
     func metronomeEngineDidTick(state: HomeState) {
-        // Can add subtle visual pulse if needed
+        if state.flashBlink {
+            view.bringSubviewToFront(flashOverlay)
+            flashOverlay.blink()
+        }
+        if state.pulseBounce {
+            topSliderBar?.pulse()
+        }
     }
     
-    // MARK: - Simulator Emulation Support
+    // MARK: - Flash Overlay
     
-    private func setupSimulatorIndicators() {
-        // Flash overlay for simulator verification
-        let overlay = UIView(frame: view.bounds)
-        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        overlay.backgroundColor = .white
-        overlay.alpha = 0
-        overlay.isUserInteractionEnabled = false
-        view.addSubview(overlay)
-        simulatorFlashOverlay = overlay
-        
-        flashController.onBlinkSimulated = { [weak self] in
-            guard let self = self, self.engine.state.isPlaying, self.engine.state.mode == .flash else { return }
-            UIView.animate(withDuration: 0.03, animations: {
-                self.simulatorFlashOverlay?.alpha = 0.8
-            }) { _ in
-                UIView.animate(withDuration: 0.05) {
-                    self.simulatorFlashOverlay?.alpha = 0
-                }
-            }
-        }
-        
-        hapticsEngine.onVibrateSimulated = { [weak self] in
-            guard let self = self, self.engine.state.isPlaying, self.engine.state.mode == .pulse else { return }
-            guard let container = self.topSliderBar else { return }
-            UIView.animate(withDuration: 0.05, animations: {
-                container.transform = CGAffineTransform(scaleX: 1.03, y: 1.03)
-            }) { _ in
-                UIView.animate(withDuration: 0.08) {
-                    container.transform = .identity
-                }
-            }
-        }
+    private func setupFlashOverlay() {
+        flashOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(flashOverlay)
+        NSLayoutConstraint.activate([
+            flashOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            flashOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            flashOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            flashOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        flashOverlay.reset()
+        topSliderBar?.resetPulse()
     }
 }

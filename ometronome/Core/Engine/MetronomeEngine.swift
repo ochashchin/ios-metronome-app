@@ -45,8 +45,7 @@ public final class MetronomeEngine {
             guard let self = self else { return }
             self.stopInternal()
             
-            self.state.isPlaying = true
-            self.state.tooltip = false
+            self.state = self.state.copyIsPlaying(true).copyTooltip(false)
             
             // Fire the first tick immediately on start, then pace subsequent ticks
             self.scheduleNextTick(deadline: .now())
@@ -57,7 +56,7 @@ public final class MetronomeEngine {
         queue.async { [weak self] in
             guard let self = self else { return }
             self.stopInternal()
-            self.state.isPlaying = false
+            self.state = self.state.copyIsPlaying(false)
         }
     }
     
@@ -73,7 +72,7 @@ public final class MetronomeEngine {
         queue.async { [weak self] in
             guard let self = self else { return }
             let oldMode = self.state.mode
-            self.state.mode = mode
+            self.state = self.state.copyMode(mode)
             if !self.state.isPlaying {
                 self.sound.stop()
                 self.flash.off()
@@ -91,7 +90,7 @@ public final class MetronomeEngine {
         queue.async { [weak self] in
             guard let self = self else { return }
             let clamped = max(0.0, min(100.0, progress))
-            self.state.progress = clamped
+            self.state = self.state.copyProgress(clamped)
             // Do NOT re-trigger or cancel the current beat.
             // The ongoing beat completes its natural interval, and scheduleNextTick
             // will automatically apply the new BPM value for subsequent ticks.
@@ -100,7 +99,8 @@ public final class MetronomeEngine {
     
     public func setTooltip(_ show: Bool) {
         queue.async { [weak self] in
-            self?.state.tooltip = show
+            guard let self = self else { return }
+            self.state = self.state.copyTooltip(show)
         }
     }
     
@@ -118,12 +118,11 @@ public final class MetronomeEngine {
         newTimer.setEventHandler { [weak self] in
             guard let self = self, self.state.isPlaying else { return }
             
-            // 1. Execute hardware action for currently active mode (.sound, .flash, .pulse)
-            self.executeHardwareAction(mode: self.state.mode)
+            // 1. Execute hardware action and get tick state with transient beat flags
+            let tickState = self.executeHardwareAction(mode: self.state.mode)
             
-            let currentState = self.state
             DispatchQueue.main.async {
-                self.delegate?.metronomeEngineDidTick(state: currentState)
+                self.delegate?.metronomeEngineDidTick(state: tickState)
             }
             
             // 2. Calculate next beat deadline using the latest user-selected BPM
@@ -139,14 +138,17 @@ public final class MetronomeEngine {
         self.timer = newTimer
     }
     
-    private func executeHardwareAction(mode: Mode) {
+    private func executeHardwareAction(mode: Mode) -> HomeState {
         switch mode {
         case .sound:
             sound.tick()
+            return self.state
         case .flash:
             flash.blink()
+            return self.state.copyFlashBlink()
         case .pulse:
             vibrator.vibrate()
+            return self.state.copyPulseBounce()
         }
     }
     
