@@ -88,6 +88,9 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         // Setup Flash Overlay (Synchronized full-screen flash)
         setupFlashOverlay()
         
+        // Simulator visual indicators
+        setupSimulatorIndicators()
+        
         // Setup Ad Banner
         setupAdBanner()
         
@@ -231,6 +234,22 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
             flashOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             flashOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    // MARK: - Simulator Emulation Support
+    
+    private func setupSimulatorIndicators() {
+        hapticsEngine.onVibrateSimulated = { [weak self] in
+            guard let self = self, self.engine.state.isPlaying, self.engine.state.mode == .pulse else { return }
+            guard let container = self.topSliderBar else { return }
+            UIView.animate(withDuration: 0.05, animations: {
+                container.transform = CGAffineTransform(scaleX: 1.03, y: 1.03)
+            }) { _ in
+                UIView.animate(withDuration: 0.08) {
+                    container.transform = .identity
+                }
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {

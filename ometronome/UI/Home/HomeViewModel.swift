@@ -31,6 +31,12 @@ public final class HomeViewModel: ObservableObject, MetronomeEngineDelegate {
         self.state = metronome.state
         
         metronome.delegate = self
+        
+        // Attach simulator pulse simulation callback
+        haptics.onVibrateSimulated = { [weak self] in
+            guard let self = self, self.state.isPlaying, self.state.mode == .pulse else { return }
+            self.triggerPulseSimulation()
+        }
     }
     
     public func toggle() {
