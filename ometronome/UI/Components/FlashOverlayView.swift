@@ -36,7 +36,7 @@ public final class FlashOverlayView: UIView {
             self.isHidden = false
             self.layer.removeAllAnimations()
             self.alpha = 0.8
-            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveLinear], animations: {
+            UIView.animate(withDuration: 0.05, delay: 0, options: [.curveLinear], animations: {
                 self.alpha = 0.0
             }) { _ in
                 self.isHidden = true

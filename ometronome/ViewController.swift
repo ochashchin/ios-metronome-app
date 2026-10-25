@@ -231,11 +231,13 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         topSliderBar?.setPlaying(state.isPlaying)
         bottomSliderBar?.setPlaying(state.isPlaying)
         flashOverlay.setPlaying(state.isPlaying, mode: state.mode)
+        if state.isPlaying && state.mode == .flash {
+            view.bringSubviewToFront(flashOverlay)
+        }
     }
     
     func metronomeEngineDidTick(state: HomeState) {
         if state.flashBlink {
-            view.bringSubviewToFront(flashOverlay)
             flashOverlay.blink()
         }
     }
