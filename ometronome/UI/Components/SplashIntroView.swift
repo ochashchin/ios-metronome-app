@@ -152,7 +152,7 @@ public final class SplashIntroView: UIView {
     /// Animates metro and nome exiting offscreen to the left with AnticipateOvershootInterpolator
     /// - metro uses tension 1.5 (winds up to the right more)
     /// - nome uses tension 1.0 (winds up to the right less)
-    public func animateLogosExit(exitDistance: CGFloat, duration: TimeInterval = 0.65, completion: (() -> Void)? = nil) {
+    public func animateLogosExit(exitDistance: CGFloat, duration: TimeInterval = 1.5, completion: (() -> Void)? = nil) {
         let metroAnim = AndroidInterpolator.createTranslationXAnimation(
             from: 0,
             to: -exitDistance,

@@ -306,17 +306,19 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
             self?.fastForwardSplashIntro()
         }
         
-        // Snappy kinetic intro timing (controls slide-in reduced ~3x):
-        // 1. Initial hold: 0.70s
-        // 2. Logo exit: 0.65s (tension 1.5 & 1.0), vignette fade: 0.40s
-        // 3. Controls slide-in: starts at 1.05s, duration 0.67s (tension 1.0)
-        // 4. Settle & tooltip: at 1.72s
-        let holdDelay: TimeInterval = 0.70
-        let logoExitDuration: TimeInterval = 0.65
-        let vignetteFadeDuration: TimeInterval = 0.40
-        let controlsStartTime: TimeInterval = 1.05
-        let controlsDuration: TimeInterval = 0.67
-        let completionTime: TimeInterval = controlsStartTime + controlsDuration
+        // Timing:
+        // 1. Initial 2000ms hold (SplashViewModel.splashOn)
+        // 2. At 2000ms: metro & nome exit left (duration 1500ms, tension 1.5 & 1.0), vignette fades in (800ms)
+        // 3. Delay between containers reduced 3x: from 2500ms to ~833ms (controls enters as logos finish exit)
+        // 4. Downstream: controls slide-in starts at 2.833s (duration 2000ms, tension 1.0)
+        // 5. Downstream: completes at 4.833s with tooltip shown
+        let holdDelay: TimeInterval = 2.0
+        let logoExitDuration: TimeInterval = 1.5
+        let vignetteFadeDuration: TimeInterval = 0.8
+        let controlsDelay: TimeInterval = 2.5 / 3.0 // ~0.833s (reduced 3x from 2.5s)
+        let controlsStartTime: TimeInterval = holdDelay + controlsDelay // ~2.833s
+        let controlsDuration: TimeInterval = 2.0
+        let completionTime: TimeInterval = controlsStartTime + controlsDuration // ~4.833s
         
         let workItem1 = DispatchWorkItem { [weak self] in
             guard let self = self, let intro = self.splashIntroView else { return }
@@ -329,6 +331,7 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         
         let workItem2 = DispatchWorkItem { [weak self] in
             guard let self = self, let controls = self.controlsContainer else { return }
+            controls.transform = .identity
             let anim = AndroidInterpolator.createTranslationXAnimation(
                 from: self.view.bounds.width,
                 to: 0,
@@ -336,7 +339,7 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
                 tension: 1.0
             )
             controls.layer.add(anim, forKey: "controlsSlideIn")
-            UIView.animate(withDuration: 0.35) {
+            UIView.animate(withDuration: 0.5) {
                 self.adBannerContainer.alpha = 1.0
             }
         }
