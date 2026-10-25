@@ -307,18 +307,17 @@ class ViewController: UIViewController, MetronomeEngineDelegate {
         }
         
         // Timing:
-        // 1. Initial 2000ms hold (SplashViewModel.splashOn)
-        // 2. At 2000ms: metro & nome exit left (duration 1500ms, tension 1.5 & 1.0), vignette fades in (800ms)
-        // 3. Delay between containers reduced 3x: from 2500ms to ~833ms (controls enters as logos finish exit)
-        // 4. Downstream: controls slide-in starts at 2.833s (duration 2000ms, tension 1.0)
-        // 5. Downstream: completes at 4.833s with tooltip shown
-        let holdDelay: TimeInterval = 2.0
+        // 1. Initial 1000ms hold (centered metro and nome)
+        // 2. At 1.00s: metro & nome exit left (duration 1500ms, tension 1.5 & 1.0), vignette fades in (800ms)
+        // 3. Controls slide-in starts at 1.625s (duration 1500ms, tension 1.0 Overshoot)
+        // 4. Downstream: completes at 3.125s with tooltip shown
+        let holdDelay: TimeInterval = 1.00
         let logoExitDuration: TimeInterval = 1.5
         let vignetteFadeDuration: TimeInterval = 0.8
         let controlsDelay: TimeInterval = 0.625 // Reduced by 25% from ~0.833s
-        let controlsStartTime: TimeInterval = holdDelay + controlsDelay // 2.625s
+        let controlsStartTime: TimeInterval = holdDelay + controlsDelay // 1.625s
         let controlsDuration: TimeInterval = 1.5
-        let completionTime: TimeInterval = controlsStartTime + controlsDuration // 4.125s
+        let completionTime: TimeInterval = controlsStartTime + controlsDuration // 3.125s
         
         let workItem1 = DispatchWorkItem { [weak self] in
             guard let self = self, let intro = self.splashIntroView else { return }
