@@ -36,3 +36,7 @@ fastlane/test_output
 
 # Instruments
 *.trace
+
+# IDE
+.idea/
+
